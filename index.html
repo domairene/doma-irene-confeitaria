@@ -1,0 +1,735 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <link rel="shortcut icon" href="midia/favicon.ico" type="image/x-icon">
+  <title>Doma Irene — Confeitaria Artesanal</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+  <!-- ═══════════════════════════════════════════════════════════
+       🔥 FIREBASE SDK — Adicionado para integração com Firestore
+       ═══════════════════════════════════════════════════════════ -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+
+  <style>
+    :root {
+      --bg:       #1a0f0a;
+      --surface:  #231510;
+      --surface2: #2e1c14;
+      --border:   #4a2e20;
+      --accent:   #e8934a;
+      --accent2:  #f0c060;
+      --rose:     #d4607a;
+      --cream:    #f5e6d0;
+      --text:     #f0dcc8;
+      --muted:    #997766;
+      --radius:   14px;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { background: var(--bg); color: var(--text); font-family: 'Jost', sans-serif; overflow-x: hidden; }
+    body::before {
+      content: ''; position: fixed; inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+      pointer-events: none; z-index: 9999;
+    }
+
+    /* NAV */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 1.1rem 5%;
+      background: rgba(26,15,10,0.9); backdrop-filter: blur(18px);
+      border-bottom: 1px solid rgba(232,147,74,0.15);
+    }
+    .nav-logo { font-family: 'Playfair Display', serif; font-size: 1.6rem; font-weight: 900; color: var(--accent2); }
+    .nav-logo span { color: var(--rose); font-style: italic; }
+    .nav-links { display: flex; gap: 2rem; list-style: none; }
+    .nav-links a { color: var(--muted); text-decoration: none; font-size: 0.8rem; font-weight: 500; letter-spacing: 2px; text-transform: uppercase; transition: color 0.3s; }
+    .nav-links a:hover { color: var(--accent); }
+    .nav-cta { background: var(--accent); color: var(--bg); padding: 0.55rem 1.4rem; border-radius: 50px; font-weight: 600; font-size: 0.82rem; text-decoration: none; letter-spacing: 1px; transition: background 0.3s, transform 0.2s; }
+    .nav-cta:hover { background: var(--accent2); transform: translateY(-1px); }
+
+    /* HERO */
+    #hero {
+      min-height: 100vh; display: grid; grid-template-columns: 1fr 1fr;
+      align-items: center; padding: 8rem 5% 5rem; position: relative; overflow: hidden; gap: 4rem;
+    }
+    .hero-glow { position: absolute; top: -100px; right: -200px; width: 700px; height: 700px; background: radial-gradient(circle, rgba(232,147,74,0.07) 0%, transparent 65%); pointer-events: none; }
+    .hero-glow2 { position: absolute; bottom: -150px; left: -100px; width: 500px; height: 500px; background: radial-gradient(circle, rgba(212,96,122,0.06) 0%, transparent 65%); pointer-events: none; }
+    .hero-content { position: relative; }
+    .hero-eyebrow { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1.5rem; animation: fadeUp 0.7s ease both; }
+    .hero-eyebrow::before { content: ''; display: block; width: 40px; height: 1px; background: var(--accent); }
+    .hero-eyebrow span { font-size: 0.75rem; letter-spacing: 3px; text-transform: uppercase; color: var(--accent); font-weight: 500; }
+    .hero-title { font-family: 'Playfair Display', serif; font-size: clamp(3rem, 6vw, 5.5rem); line-height: 1.05; font-weight: 900; animation: fadeUp 0.7s 0.1s ease both; }
+    .hero-title em { color: var(--accent2); font-style: italic; display: block; }
+    .hero-sub { margin-top: 1.5rem; font-family: 'Cormorant Garamond', serif; font-size: 1.2rem; line-height: 1.8; color: var(--muted); max-width: 460px; animation: fadeUp 0.7s 0.2s ease both; }
+    .hero-btns { margin-top: 2.5rem; display: flex; gap: 1rem; flex-wrap: wrap; animation: fadeUp 0.7s 0.3s ease both; }
+    .btn-primary { background: var(--accent); color: var(--bg); padding: 0.9rem 2.2rem; border-radius: 50px; font-weight: 600; font-size: 0.88rem; text-decoration: none; letter-spacing: 1px; transition: transform 0.2s, box-shadow 0.3s, background 0.3s; box-shadow: 0 8px 30px rgba(232,147,74,0.3); }
+    .btn-primary:hover { background: var(--accent2); transform: translateY(-2px); }
+    .btn-outline { background: transparent; color: var(--text); padding: 0.9rem 2.2rem; border-radius: 50px; font-weight: 400; font-size: 0.88rem; text-decoration: none; letter-spacing: 1px; border: 1px solid var(--border); transition: border-color 0.3s, color 0.3s; }
+    .btn-outline:hover { border-color: var(--accent); color: var(--accent); }
+    .hero-img-wrap { position: relative; border-radius: 200px 200px 120px 120px; overflow: hidden; aspect-ratio: 3/4; animation: fadeUp 0.7s 0.15s ease both; }
+    .hero-img-wrap img { width: 100%; height: 100%; object-fit: cover; }
+    .hero-img-badge { position: absolute; bottom: 2rem; left: -1.5rem; background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius); padding: 1rem 1.3rem; backdrop-filter: blur(10px); }
+    .badge-num { font-family: 'Playfair Display', serif; font-size: 2rem; font-weight: 900; color: var(--accent2); line-height: 1; }
+    .badge-txt { font-size: 0.75rem; color: var(--muted); margin-top: 0.2rem; text-transform: uppercase; letter-spacing: 1px; }
+
+    /* SECTIONS */
+    section { padding: 6rem 5%; }
+    .section-eyebrow { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.75rem; }
+    .section-eyebrow::before { content: ''; display: block; width: 30px; height: 1px; background: var(--accent); }
+    .section-eyebrow span { font-size: 0.72rem; letter-spacing: 3px; text-transform: uppercase; color: var(--accent); font-weight: 500; }
+    .section-title { font-family: 'Playfair Display', serif; font-size: clamp(1.8rem, 4vw, 3rem); font-weight: 900; line-height: 1.15; }
+    .section-desc { font-family: 'Cormorant Garamond', serif; font-size: 1.15rem; color: var(--muted); line-height: 1.8; max-width: 560px; }
+
+    /* CARROSSEL */
+    #carrossel { background: var(--surface); }
+    .carousel-wrap { position: relative; overflow: hidden; border-radius: var(--radius); margin-top: 2.5rem; border: 1px solid var(--border); }
+    .carousel-track { display: flex; transition: transform 0.6s cubic-bezier(0.77,0,0.18,1); }
+    .carousel-slide { min-width: 100%; height: 500px; position: relative; overflow: hidden; background: var(--surface2); }
+    .carousel-slide img { width: 100%; height: 100%; object-fit: cover; filter: brightness(0.65) saturate(1.2); }
+    .carousel-caption { position: absolute; bottom: 0; left: 0; right: 0; padding: 2.5rem 3rem; background: linear-gradient(to top, rgba(26,15,10,0.92) 0%, transparent 100%); }
+    .carousel-caption h3 { font-family: 'Playfair Display', serif; font-size: 1.8rem; font-weight: 700; }
+    .carousel-caption p { color: var(--muted); font-size: 0.9rem; margin-top: 0.4rem; }
+    .carousel-btn { position: absolute; top: 50%; transform: translateY(-50%); background: rgba(26,15,10,0.6); border: 1px solid var(--border); color: var(--cream); width: 50px; height: 50px; border-radius: 50%; cursor: pointer; font-size: 1.1rem; display: flex; align-items: center; justify-content: center; transition: all 0.3s; z-index: 10; backdrop-filter: blur(8px); }
+    .carousel-btn:hover { background: var(--accent); border-color: var(--accent); color: var(--bg); }
+    .carousel-prev { left: 1.2rem; }
+    .carousel-next { right: 1.2rem; }
+    .carousel-dots { display: flex; gap: 0.5rem; justify-content: center; margin-top: 1.2rem; }
+    .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--border); cursor: pointer; transition: all 0.3s; }
+    .dot.active { background: var(--accent); width: 20px; border-radius: 3px; }
+
+    /* PRODUTO */
+    #produto { background: var(--bg); }
+    .produto-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 5rem; align-items: center; margin-top: 3rem; }
+    .produto-img-wrap { position: relative; border-radius: 120px 120px var(--radius) var(--radius); overflow: hidden; aspect-ratio: 3/4; border: 1px solid var(--border); }
+    .produto-img-wrap img { width: 100%; height: 100%; object-fit: cover; }
+    .produto-tag { position: absolute; top: 1.5rem; right: 1.5rem; background: var(--accent); color: var(--bg); font-family: 'Playfair Display', serif; font-size: 0.8rem; font-weight: 700; padding: 0.4rem 1rem; border-radius: 50px; letter-spacing: 1px; }
+    .produto-features { display: flex; flex-direction: column; gap: 1.2rem; margin-top: 2rem; }
+    .feature-item { display: flex; align-items: flex-start; gap: 1rem; padding: 1.2rem 1.4rem; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); transition: border-color 0.3s, transform 0.3s; }
+    .feature-item:hover { border-color: rgba(232,147,74,0.4); transform: translateX(4px); }
+    .feature-icon { font-size: 1.3rem; min-width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; background: rgba(232,147,74,0.1); border-radius: 10px; }
+    .feature-text h4 { font-family: 'Cormorant Garamond', serif; font-size: 1.05rem; font-weight: 600; margin-bottom: 0.2rem; }
+    .feature-text p { color: var(--muted); font-size: 0.85rem; line-height: 1.6; }
+    .preco-tag { display: inline-flex; align-items: center; gap: 0.5rem; background: rgba(240,192,96,0.1); border: 1px solid rgba(240,192,96,0.3); border-radius: 50px; padding: 0.6rem 1.4rem; margin-top: 1.5rem; }
+    .preco-val { font-family: 'Playfair Display', serif; font-size: 1.6rem; font-weight: 900; color: var(--accent2); }
+    .preco-label { color: var(--muted); font-size: 0.82rem; }
+
+    /* EMPRESA */
+    #empresa { background: var(--surface); }
+    .empresa-grid { display: grid; grid-template-columns: 1.1fr 1fr; gap: 4rem; align-items: center; margin-top: 3rem; }
+    .empresa-img { border-radius: var(--radius); width: 100%; aspect-ratio: 4/3; object-fit: cover; border: 1px solid var(--border); }
+    .empresa-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 1.2rem; margin-top: 2.5rem; }
+    .stat-card { background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.5rem; text-align: center; transition: border-color 0.3s; }
+    .stat-card:hover { border-color: rgba(232,147,74,0.35); }
+    .stat-number { font-family: 'Playfair Display', serif; font-size: 2.2rem; font-weight: 900; color: var(--accent); }
+    .stat-label { color: var(--muted); font-size: 0.78rem; margin-top: 0.3rem; text-transform: uppercase; letter-spacing: 1px; }
+
+    /* EQUIPE */
+    #equipe { background: var(--bg); }
+    .equipe-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(195px, 1fr)); gap: 1.5rem; margin-top: 3rem; }
+    .team-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; transition: transform 0.35s, border-color 0.3s; }
+    .team-card:hover { transform: translateY(-8px); border-color: rgba(232,147,74,0.4); }
+    .team-card img { width: 100%; aspect-ratio: 1/1; object-fit: cover; display: block; }
+    .team-info { padding: 1.2rem; border-top: 1px solid var(--border); }
+    .team-name { font-family: 'Cormorant Garamond', serif; font-weight: 600; font-size: 1.05rem; }
+    .team-role { color: var(--accent); font-size: 0.75rem; margin-top: 0.2rem; letter-spacing: 1px; text-transform: uppercase; }
+
+    /* AVALIAÇÕES */
+    #avaliacoes { background: var(--surface); }
+    .avaliacoes-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.5rem; margin-top: 3rem; }
+    .avaliacao-card { background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.8rem; transition: border-color 0.3s; }
+    .avaliacao-card:hover { border-color: rgba(232,147,74,0.3); }
+    .stars { color: var(--accent2); font-size: 0.95rem; letter-spacing: 3px; }
+    .av-text { font-family: 'Cormorant Garamond', serif; font-size: 1.05rem; color: var(--text); line-height: 1.7; margin: 1rem 0; font-style: italic; }
+    .av-author { display: flex; align-items: center; gap: 0.75rem; }
+    .av-avatar { width: 36px; height: 36px; border-radius: 50%; overflow: hidden; background: var(--border); }
+    .av-avatar img { width: 100%; height: 100%; object-fit: cover; }
+    .av-name { font-weight: 600; font-size: 0.88rem; }
+    .av-date { color: var(--muted); font-size: 0.75rem; }
+    .nova-av-form { background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius); padding: 2.5rem; margin-top: 3rem; }
+    .nova-av-form h3 { font-family: 'Playfair Display', serif; font-size: 1.3rem; margin-bottom: 1.5rem; }
+    .star-input { display: flex; gap: 0.4rem; margin-bottom: 1.2rem; }
+    .star-input span { font-size: 1.8rem; cursor: pointer; color: var(--border); transition: color 0.2s, transform 0.2s; }
+    .star-input span.active { color: var(--accent2); transform: scale(1.15); }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+    .form-group { margin-bottom: 1rem; }
+    .form-group label { display: block; font-size: 0.72rem; color: var(--muted); margin-bottom: 0.4rem; text-transform: uppercase; letter-spacing: 2px; }
+    .form-group input, .form-group textarea, .form-group select { width: 100%; background: var(--surface); border: 1px solid var(--border); color: var(--text); padding: 0.8rem 1.1rem; border-radius: 10px; font-family: 'Jost', sans-serif; font-size: 0.9rem; transition: border-color 0.3s; outline: none; resize: vertical; }
+    .form-group input:focus, .form-group textarea:focus, .form-group select:focus { border-color: var(--accent); }
+    .form-group select option { background: var(--surface); }
+    .avatar-upload-area { display: flex; align-items: center; gap: 1.2rem; margin-bottom: 1rem; }
+    .avatar-preview { width: 64px; height: 64px; border-radius: 50%; overflow: hidden; background: var(--surface2); border: 2px solid var(--border); display: flex; align-items: center; justify-content: center; font-size: 1.6rem; color: var(--muted); flex-shrink: 0; transition: border-color 0.3s; }
+    .avatar-preview img { width: 100%; height: 100%; object-fit: cover; }
+    .avatar-preview.has-img { border-color: var(--accent); }
+    .avatar-upload-info { display: flex; flex-direction: column; gap: 0.4rem; }
+    .avatar-upload-info label { font-size: 0.72rem; color: var(--muted); text-transform: uppercase; letter-spacing: 2px; }
+    .avatar-upload-info p { font-size: 0.78rem; color: var(--muted); }
+    .avatar-upload-btn { display: inline-flex; align-items: center; gap: 0.5rem; background: transparent; border: 1px solid var(--border); color: var(--text); padding: 0.5rem 1rem; border-radius: 50px; font-family: 'Jost', sans-serif; font-size: 0.8rem; cursor: pointer; transition: border-color 0.3s, color 0.3s; }
+    .avatar-upload-btn:hover { border-color: var(--accent); color: var(--accent); }
+    .avatar-remove-btn { display: none; background: transparent; border: none; color: var(--muted); font-size: 0.78rem; cursor: pointer; text-decoration: underline; }
+    .avatar-remove-btn:hover { color: var(--rose); }
+    .av-initials { width: 36px; height: 36px; border-radius: 50%; background: var(--surface); border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.85rem; color: var(--accent); text-transform: uppercase; }
+
+    /* ─── Estado de carregamento das avaliações (novo) ─── */
+    .av-loading {
+      text-align: center; padding: 2rem; color: var(--muted);
+      font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 1.1rem;
+      grid-column: 1 / -1;
+    }
+    .av-loading::after {
+      content: ''; display: inline-block; width: 14px; height: 14px;
+      border: 2px solid var(--border); border-top-color: var(--accent);
+      border-radius: 50%; animation: spin 0.8s linear infinite; margin-left: 0.6rem;
+      vertical-align: middle;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* LOCALIZAÇÃO */
+    #localizacao { background: var(--bg); }
+    .loc-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; margin-top: 3rem; align-items: start; }
+    .map-frame { border-radius: var(--radius); overflow: hidden; border: 1px solid var(--border); height: 380px; }
+    .map-frame iframe { width: 100%; height: 100%; border: none; }
+    .loc-info { display: flex; flex-direction: column; gap: 1.2rem; }
+    .loc-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.4rem; display: flex; align-items: flex-start; gap: 1rem; transition: border-color 0.3s; }
+    .loc-card:hover { border-color: rgba(232,147,74,0.35); }
+    .loc-icon { font-size: 1.3rem; background: rgba(232,147,74,0.1); padding: 0.6rem; border-radius: 8px; min-width: 44px; text-align: center; }
+    .loc-text h4 { font-family: 'Cormorant Garamond', serif; font-size: 1rem; font-weight: 600; margin-bottom: 0.3rem; }
+    .loc-text p { color: var(--muted); font-size: 0.85rem; line-height: 1.6; }
+    .loc-text a { color: var(--accent); text-decoration: none; }
+    .loc-text a:hover { text-decoration: underline; }
+
+    /* CONTATO */
+    #contato { background: var(--surface); }
+    .contato-grid { display: grid; grid-template-columns: 1fr 1.3fr; gap: 4rem; margin-top: 3rem; }
+    .contato-form { display: flex; flex-direction: column; gap: 0.8rem; }
+    .btn-submit { background: var(--accent); color: var(--bg); padding: 0.95rem 2rem; border-radius: 50px; font-weight: 600; font-size: 0.9rem; letter-spacing: 1px; border: none; cursor: pointer; font-family: 'Jost', sans-serif; transition: background 0.3s, transform 0.2s; box-shadow: 0 8px 30px rgba(232,147,74,0.25); }
+    .btn-submit:hover { background: var(--accent2); transform: translateY(-2px); }
+    .btn-submit:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+    .whats-btn { display: flex; align-items: center; justify-content: center; gap: 0.75rem; background: #25D366; color: #fff; padding: 0.95rem 1.5rem; border-radius: 50px; font-weight: 600; font-size: 0.9rem; text-decoration: none; transition: opacity 0.3s, transform 0.2s; box-shadow: 0 8px 24px rgba(37,211,102,0.25); letter-spacing: 1px; }
+    .whats-btn:hover { opacity: 0.88; transform: translateY(-2px); }
+    .contato-info { display: flex; flex-direction: column; gap: 1.3rem; justify-content: center; }
+    .ci-item { background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.4rem; display: flex; align-items: flex-start; gap: 1rem; transition: border-color 0.3s; }
+    .ci-item:hover { border-color: rgba(232,147,74,0.35); }
+    .ci-icon { font-size: 1.2rem; background: rgba(232,147,74,0.1); padding: 0.6rem; border-radius: 8px; min-width: 42px; text-align: center; }
+    .ci-text h4 { font-family: 'Cormorant Garamond', serif; font-size: 0.95rem; font-weight: 600; }
+    .ci-text p { color: var(--muted); font-size: 0.85rem; margin-top: 0.2rem; }
+
+    /* FOOTER */
+    footer { background: var(--bg); border-top: 1px solid var(--border); padding: 3rem 5%; text-align: center; }
+    .footer-logo { font-family: 'Playfair Display', serif; font-size: 2rem; font-weight: 900; color: var(--accent2); display: block; margin-bottom: 0.3rem; }
+    .footer-tagline { font-family: 'Cormorant Garamond', serif; font-style: italic; color: var(--muted); font-size: 0.95rem; margin-bottom: 1.8rem; }
+    .footer-links { display: flex; gap: 2rem; justify-content: center; margin-bottom: 2rem; flex-wrap: wrap; }
+    .footer-links a { color: var(--muted); text-decoration: none; font-size: 0.82rem; letter-spacing: 1px; text-transform: uppercase; transition: color 0.3s; }
+    .footer-links a:hover { color: var(--accent); }
+    footer p { color: var(--muted); font-size: 0.78rem; }
+
+    /* ANIMATIONS */
+    @keyframes fadeUp { from { opacity: 0; transform: translateY(28px); } to { opacity: 1; transform: translateY(0); } }
+    .reveal { opacity: 0; transform: translateY(30px); transition: opacity 0.75s ease, transform 0.75s ease; }
+    .reveal.visible { opacity: 1; transform: none; }
+
+    /* RESPONSIVE */
+    @media (max-width: 900px) {
+      #hero { grid-template-columns: 1fr; }
+      .hero-img-wrap { max-height: 340px; border-radius: var(--radius); }
+      .hero-img-badge { left: 1rem; bottom: 1rem; }
+      .produto-grid, .empresa-grid, .loc-grid, .contato-grid { grid-template-columns: 1fr; }
+      .form-row { grid-template-columns: 1fr; }
+      .nav-links { display: none; }
+      .equipe-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <img src="midia/favicon.png" width="120" weight="100">
+    <ul class="nav-links">
+      <li><a href="#produto">Produtos</a></li>
+      <li><a href="#empresa">Sobre Nós</a></li>
+      <li><a href="#equipe">Equipe</a></li>
+      <li><a href="#avaliacoes">Avaliações</a></li>
+      <li><a href="#localizacao">Feira</a></li>
+      <li><a href="#contato">Contato</a></li>
+    </ul>
+    <a href="#contato" class="nav-cta">Fazer Pedido</a>
+  </nav>
+
+  <!-- HERO -->
+  <section id="hero">
+    <div class="hero-glow"></div>
+    <div class="hero-glow2"></div>
+    <div class="hero-content">
+      <div class="hero-eyebrow"><span>Confeitaria Artesanal</span></div>
+      <h1 class="hero-title">
+        Feito com Amor,<br>
+        <em>Sabor que<br>Encanta</em>
+      </h1>
+      <p class="hero-sub">Doces artesanais preparados com ingredientes selecionados, receitas únicas e todo o carinho que cada mordida merece.</p>
+      <div class="hero-btns">
+        <a href="#produto" class="btn-primary">🍫 Ver Produtos</a>
+        <a href="#contato" class="btn-outline">Fazer Pedido</a>
+      </div>
+    </div>
+    <div class="hero-img-wrap reveal">
+      <img src="midia/conechurros.jpeg" alt="churros"/>
+      <div class="hero-img-badge"></div>
+    </div>
+  </section>
+
+  <!-- CARROSSEL -->
+  <section id="carrossel">
+    <div class="section-eyebrow reveal"><span>Galeria</span></div>
+    <h2 class="section-title reveal">Nossos Sabores em Destaque</h2>
+    <p class="section-desc reveal" style="margin-top:.5rem">Cada peça é uma obra de arte feita à mão com carinho e dedicação.</p>
+    <div class="carousel-wrap reveal">
+      <div class="carousel-track" id="carouselTrack">
+        <div class="carousel-slide">
+          <img src="https://assets.bonappetit.com/photos/58ff5f162278cd3dbd2c069c/1:1/w_2560%2Cc_limit/churros.jpg"/>
+          <div class="carousel-caption"><h3>Chocolate Especial</h3><p>Sabores variados, decoração única para cada ocasião</p></div>
+        </div>
+        <div class="carousel-slide">
+          <img src="https://imagem.band.com.br/88/f_116288.jpg" alt="Bolo decorado"/>
+          <div class="carousel-caption"><h3>Doce de Leite</h3><p>Arte e sabor reunidos em cada fatia</p></div>
+        </div>
+      </div>
+      <button class="carousel-btn carousel-prev" onclick="moveCarousel(-1)">&#8592;</button>
+      <button class="carousel-btn carousel-next" onclick="moveCarousel(1)">&#8594;</button>
+    </div>
+    <div class="carousel-dots" id="carouselDots"></div>
+  </section>
+
+  <!-- PRODUTO -->
+  <section id="produto">
+    <div class="section-eyebrow reveal"><span>O Produto</span></div>
+    <div class="produto-grid">
+      <div class="produto-img-wrap reveal">
+        <img src="midia/churrosrecheio.jpeg" alt="Churros DomaIrene"/>
+        <span class="produto-tag">✦ Destaque</span>
+      </div>
+      <div class="reveal">
+        <h2 class="section-title">Um pedacinho<br>Da Espanha</h2>
+        <p class="section-desc" style="margin-top:1rem">Nossa <strong style="color:var(--accent)">Massa especial</strong> é preparada com água ou leite, manteiga, açúcar, farinha de trigo, ovos e uma pitada de sal,
+        garantindo textura crocante e sabor marcante. Uma receita inspirada na Espanha mantendo a tradição do
+        churros espanhol autêntico.</p>
+        <div class="produto-features">
+          <div class="feature-item">
+            <div class="feature-icon">🌿</div>
+            <div class="feature-text"><h4>Ingredientes Naturais</h4><p>Sem conservantes artificiais. Usamos apenas ingredientes frescos e selecionados.</p></div>
+          </div>
+          <div class="feature-item">
+            <div class="feature-icon">🎁</div>
+            <div class="feature-text"><h4>Embalagem Premium</h4><p>Caixas personalizadas, ideal para facilitar o consumo.</p></div>
+          </div>
+          <div class="feature-item">
+            <div class="feature-icon">🍫</div>
+            <div class="feature-text"><h4>Variedade de Sabores</h4><p>Chocolate ou Doce de leite, você está na controle de qual sabor se deliciar.</p></div>
+          </div>
+        </div>
+        <div class="preco-tag">
+          <span class="preco-val">R$ 12,00</span>
+          <span class="preco-label">— Aceitamos Pix</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- EMPRESA -->
+  <section id="empresa">
+    <div class="section-eyebrow reveal"><span>Nossa História</span></div>
+    <div class="empresa-grid">
+      <div class="reveal">
+        <h2 class="section-title">Quem Somos</h2>
+        <p class="section-desc" style="margin-top:1rem">A Doma Irine tem como inspiração as raízes da culinária espanhola. Seu público-alvo é formado principalmente por crianças, jovens, adultos e família, que gostam de doces e buscam opções saborosas e acessíveis para momentos de lazer.
+        Também são pessoas que costumam consumir conteúdos de comida nas redes sociais, principalmente no Instagram e TikTok, o que torna a experiência visual do produto e da marca um fator importante para atrair clientes. A marca Doma Irine valoriza principalmente qualidade, sabor e
+        experiência. Os churros devem ser preparados de forma artesanal, frescos e crocantes,
+        transmitindo a sensação de um produto feito com cuidado e dedicação. Dessa forma, a Doma Irine
+        se posiciona como uma confeitaria que oferece churros saborosos e feitos com carinho,
+        proporcionando uma experiência doce e especial.</p>
+        <p class="section-desc" style="margin-top:1rem">Nossa receita é desenvolvida com carinho, respeito ao ingrediente e amor pela confeitaria. Nossa missão é levar um pedacinho de doçura para os momentos mais especiais da sua vida.</p>
+        <div class="empresa-stats">
+          <div class="stat-card"><div class="stat-number">2</div><div class="stat-label">Sabores Únicos</div></div>
+          <div class="stat-card"><div class="stat-number">100%</div><div class="stat-label">Artesanal</div></div>
+        </div>
+      </div>
+      <div class="reveal"></div>
+    </div>
+  </section>
+
+  <!-- EQUIPE GCOM -->
+  <section id="equipe">
+    <div class="section-eyebrow reveal"><span>Pessoas</span></div>
+    <h2 class="section-title reveal">Equipe GCom</h2>
+    <p class="section-desc reveal" style="margin-top:.5rem">As mãos e mentes talentosas por trás de cada doce especial.</p>
+    <div class="equipe-grid">
+      <div class="team-card reveal">
+        <img src="midia/joao.jpeg" alt="aluno"/>
+        <div class="team-info"><div class="team-name">João Maurício da Costa Buzzo</div><div class="team-role"></div></div>
+      </div>
+      <div class="team-card reveal">
+        <img src="midia/joaomiguel.jpeg" alt="Designer"/>
+        <div class="team-info"><div class="team-name">João Miguel Rodrigues de Lima</div><div class="team-role"></div></div>
+      </div>
+      <div class="team-card reveal">
+        <img src="midia/julio.jpeg" alt="Chocolatier"/>
+        <div class="team-info"><div class="team-name">Júlio Ribeiro Vilela</div><div class="team-role"></div></div>
+      </div>
+      <div class="team-card reveal">
+        <img src="midia/sabrinaleal.jpeg" alt="Vendas"/>
+        <div class="team-info"><div class="team-name">Sabrina Leal Carneiro</div><div class="team-role"></div></div>
+      </div>
+      <div class="team-card reveal">
+        <img src="midia/patricianakamoto.png" alt="Marketing"/>
+        <div class="team-info"><div class="team-name">Patrícia Porto Nakamoto</div><div class="team-role"></div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- AVALIAÇÕES -->
+  <section id="avaliacoes">
+    <div class="section-eyebrow reveal"><span>Depoimentos</span></div>
+    <h2 class="section-title reveal">O que Nossos Clientes Dizem</h2>
+
+    <!--
+      Os 3 cards fixos abaixo são avaliações de exemplo (estáticas).
+      As avaliações enviadas pelos visitantes ficam no Firestore e
+      são renderizadas dinamicamente abaixo deles.
+    -->
+    <div class="avaliacoes-grid" id="avaliacoesGrid">
+      <div class="avaliacao-card reveal">
+        <div class="stars">★★★★★</div>
+        <p class="av-text">"Os churros da Doma Irene são os melhores que já comi! Pedi para o aniversário da minha filha e todos adoraram. Voltarei com certeza!"</p>
+        <div class="av-author">
+          <div class="av-avatar"><img src="https://i.pravatar.cc/80?img=47" alt=""/></div>
+          <div><div class="av-name">Fernanda Costa</div><div class="av-date">Março 2026</div></div>
+        </div>
+      </div>
+      <div class="avaliacao-card reveal">
+        <div class="stars">★★★★★</div>
+        <p class="av-text">"Pedi os churros para eu e meu filho provar, deliciosos. Recomendo muito!"</p>
+        <div class="av-author">
+          <div class="av-avatar"><img src="https://i.pravatar.cc/80?img=32" alt=""/></div>
+          <div><div class="av-name">Isabela Ramos</div><div class="av-date">Março 2026</div></div>
+        </div>
+      </div>
+      <div class="avaliacao-card reveal">
+        <div class="stars">★★★★★</div>
+        <p class="av-text">"O churros artesanal foi o presente perfeito! Embalagem linda e os sabores são incríveis. Chocolate de verdade!"</p>
+        <div class="av-author">
+          <div class="av-avatar"><img src="https://i.pravatar.cc/80?img=11" alt=""/></div>
+          <div><div class="av-name">Roberto Alves</div><div class="av-date">Março 2026</div></div>
+        </div>
+      </div>
+
+      <!-- Avaliações do Firestore são inseridas aqui via JS -->
+      <div class="av-loading" id="avLoading">Carregando avaliações</div>
+    </div>
+
+    <div class="nova-av-form reveal">
+      <h3>🍬 Deixe sua Avaliação</h3>
+      <div class="star-input" id="starInput">
+        <span data-v="1">★</span><span data-v="2">★</span><span data-v="3">★</span><span data-v="4">★</span><span data-v="5">★</span>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Seu Nome</label>
+          <input type="text" id="avNome" placeholder="Ex: Maria Silva"/>
+        </div>
+        <div class="form-group">
+          <label>Produto Avaliado</label>
+          <select id="avProduto">
+            <option value="">Selecione...</option>
+            <option>Churros de Doce de Leite</option>
+            <option>Churros de Chocolate</option>
+          </select>
+        </div>
+      </div>
+      <div class="avatar-upload-area">
+        <div class="avatar-preview" id="avAvatarPreview">📷</div>
+        <div class="avatar-upload-info">
+          <label>Foto (opcional)</label>
+          <p>Adicione uma foto sua, se preferir.</p>
+          <input type="file" id="avFotoInput" accept="image/*" style="display:none" onchange="previewAvatar(event)"/>
+          <button class="avatar-upload-btn" type="button" onclick="document.getElementById('avFotoInput').click()">📎 Escolher foto</button>
+          <button class="avatar-remove-btn" id="avRemoverBtn" type="button" onclick="removerAvatar()">Remover foto</button>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Comentário</label>
+        <textarea id="avComentario" rows="3" placeholder="Como foi sua experiência com nossos doces?"></textarea>
+      </div>
+      <button class="btn-submit" id="btnEnviar" onclick="enviarAvaliacao()">Publicar Avaliação ✨</button>
+    </div>
+  </section>
+
+  <!-- LOCALIZAÇÃO -->
+  <section id="localizacao">
+    <div class="section-eyebrow reveal"><span>Venha Nos Visitar</span></div>
+    <h2 class="section-title reveal">Localização da Feira</h2>
+    <p class="section-desc reveal" style="margin-top:.5rem">Nos encontre na feira e experimente nossos doces pessoalmente!</p>
+    <div class="loc-grid">
+      <div class="map-frame reveal">
+        <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d1548.138102970438!2d-50.437937812580174!3d-22.649549233985176!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x9495398f103cdbd3%3A0xf49e6748feb2ceaa!2sFaculdade%20de%20Tecnologia%20de%20Assis!5e0!3m2!1spt-BR!2sbr!4v1778547204775!5m2!1spt-BR!2sbr" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+      </div>
+      <div class="loc-info reveal">
+        <div class="loc-card">
+          <div class="loc-icon">📍</div>
+          <div class="loc-text">
+            <h4>Endereço</h4>
+            <p>Av. Dom Antônio, 2100 - Parque Universitario, Assis - SP, 19806-900<br>Vão de Letras</p>
+            <a href="https://maps.app.goo.gl/N2VKVyncewSnH95e8" target="_blank">Ver no Google Maps ↗</a>
+          </div>
+        </div>
+        <div class="loc-card">
+          <div class="loc-icon">📅</div>
+          <div class="loc-text"><h4>Datas do Evento</h4><p>01 de junho de 2026<br>Horário: 19:15h às 22:55h</p></div>
+        </div>
+        <div class="loc-card">
+          <div class="loc-icon">🍭</div>
+          <div class="loc-text"><h4>Stand DoceArte</h4><p>Fatec Assis, Campus Unesp, Prédio de Vidro</p></div>
+        </div>
+        <a href="https://maps.app.goo.gl/uCRj3AzUHNUCA8VA7" target="_blank" class="btn-primary" style="display:inline-block; text-align:center;">🗺️ Abrir no Google Maps</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTATO -->
+  <section id="contato">
+    <div class="section-eyebrow reveal"><span>Fale Conosco</span></div>
+    <h2 class="section-title reveal">Faça seu Pedido</h2>
+    <br>
+    <a href="https://wa.me/18996137091?text=Ol%C3%A1%2C%20vim%20pelo%20site%20e%20gostaria%20de%20fazer%20um%20pedido%20da%20DoceArte!" target="_blank" class="whats-btn">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+      Pedir pelo WhatsApp
+    </a>
+    <br>
+    <div class="contato-info reveal">
+      <div class="ci-item"><div class="ci-icon">📱</div><div class="ci-text"><h4>WhatsApp</h4><p>(18) 99613-7091</p></div></div>
+      <div class="ci-item"><div class="ci-icon">⏰</div><div class="ci-text"><h4>Atendimento</h4><p>Seg 19h às 22h</p></div></div>
+      <div class="ci-item"><div class="ci-icon">🚚</div><div class="ci-text"><h4>Entrega</h4><p>Apenas retirada.</p></div></div>
+      <div class="ci-item"><div class="ci-icon">📸</div><div class="ci-text"><h4>Instagram</h4><p>@docearte.confeitaria</p></div></div>
+    </div>
+  </section>
+
+  <footer>
+    <span class="footer-logo">DomaIrene</span>
+    <p class="footer-tagline">Confeitaria Artesanal — Um pedacinho da Espanha com você</p>
+    <div class="footer-links">
+      <a href="#produto">Produtos</a>
+      <a href="#empresa">Sobre Nós</a>
+      <a href="#equipe">Equipe</a>
+      <a href="#avaliacoes">Avaliações</a>
+      <a href="#localizacao">Feira</a>
+      <a href="#contato">Contato</a>
+    </div>
+    <p>© 2026 DomaIrene Confeitaria Artesanal — Site Desenvolvido pela Equipe de GTI</p>
+  </footer>
+
+  <script>
+    
+    const firebaseConfig = {
+      apiKey: "AIzaSyC9owkTy78n-tCrnE25I0gtj8fjF_CGuNQ",
+      authDomain: "domairene-web.firebaseapp.com",
+      projectId: "domairene-web",
+      storageBucket: "domairene-web.firebasestorage.app",
+      messagingSenderId: "155917930279",
+      appId: "1:155917930279:web:ab0679d9f45e7ed479a302",
+      measurementId: "G-LCHB6CC00T"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+    // Coleção onde as avaliações serão salvas
+    const avaliacoesRef = db.collection("avaliacoes");
+
+
+    // ═══════════════════════════════════════════════════════════════════
+    // 📥 CARREGAR avaliações do Firestore ao abrir o site
+    // ═══════════════════════════════════════════════════════════════════
+    function formatarData(timestamp) {
+      if (!timestamp) return 'Agora';
+      const d = timestamp.toDate ? timestamp.toDate() : new Date(timestamp);
+      return d.toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' });
+    }
+
+    function criarCardAvaliacao(dados) {
+      const starsStr = '★'.repeat(dados.estrelas) + '☆'.repeat(5 - dados.estrelas);
+      const avatarHtml = dados.avatar
+        ? `<div class="av-avatar"><img src="${dados.avatar}" alt="${dados.nome}"/></div>`
+        : `<div class="av-initials">${dados.nome.charAt(0)}</div>`;
+
+      const card = document.createElement('div');
+      card.className = 'avaliacao-card';
+      card.style.animation = 'fadeUp 0.5s ease both';
+      card.innerHTML = `
+        <div class="stars">${starsStr}</div>
+        <p class="av-text">"${dados.comentario}"</p>
+        <div class="av-author">
+          ${avatarHtml}
+          <div>
+            <div class="av-name">${dados.nome}</div>
+            <div class="av-date">${dados.produto ? dados.produto + ' • ' : ''}${formatarData(dados.criadoEm)}</div>
+          </div>
+        </div>`;
+      return card;
+    }
+
+    function carregarAvaliacoes() {
+      const grid    = document.getElementById('avaliacoesGrid');
+      const loading = document.getElementById('avLoading');
+
+      // Escuta em tempo real: qualquer nova avaliação aparece automaticamente
+      avaliacoesRef
+        .orderBy('criadoEm', 'desc')
+        .onSnapshot(snapshot => {
+          // Remove apenas os cards dinâmicos (mantém os 3 estáticos + spinner)
+          grid.querySelectorAll('.av-dinamico').forEach(el => el.remove());
+          loading.style.display = 'none';
+
+          if (snapshot.empty) return;
+
+          snapshot.forEach(doc => {
+            const card = criarCardAvaliacao(doc.data());
+            card.classList.add('av-dinamico');
+            grid.appendChild(card);
+          });
+        }, err => {
+          console.error('Erro ao carregar avaliações:', err);
+          loading.textContent = '⚠️ Não foi possível carregar as avaliações.';
+        });
+    }
+
+    document.addEventListener('DOMContentLoaded', carregarAvaliacoes);
+
+
+    // ═══════════════════════════════════════════════════════════════════
+    // 📤 ENVIAR avaliação para o Firestore
+    // ═══════════════════════════════════════════════════════════════════
+    async function enviarAvaliacao() {
+      const nome    = document.getElementById('avNome').value.trim();
+      const produto = document.getElementById('avProduto').value;
+      const coment  = document.getElementById('avComentario').value.trim();
+
+      if (!nome || !coment || selectedStars === 0) {
+        alert('Por favor, preencha seu nome, comentário e selecione uma nota!');
+        return;
+      }
+
+      const btn = document.getElementById('btnEnviar');
+      btn.disabled    = true;
+      btn.textContent = 'Publicando…';
+
+      try {
+        // Objeto que será salvo no Firestore
+        const novaAvaliacao = {
+          nome:       nome,
+          produto:    produto || '',
+          comentario: coment,
+          estrelas:   selectedStars,
+          avatar:     avatarDataUrl || null,   // base64 da foto, ou null
+          criadoEm:   firebase.firestore.FieldValue.serverTimestamp()
+        };
+
+        await avaliacoesRef.add(novaAvaliacao);
+
+        // Limpa o formulário após salvar com sucesso
+        document.getElementById('avNome').value        = '';
+        document.getElementById('avProduto').value     = '';
+        document.getElementById('avComentario').value  = '';
+        selectedStars = 0;
+        hl(0);
+        removerAvatar();
+
+        btn.textContent = '✅ Publicado!';
+        setTimeout(() => {
+          btn.disabled    = false;
+          btn.textContent = 'Publicar Avaliação ✨';
+        }, 2500);
+
+        // O onSnapshot já vai inserir o card automaticamente
+        document.getElementById('avaliacoesGrid').scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+      } catch (err) {
+        console.error('Erro ao enviar avaliação:', err);
+        alert('Erro ao publicar avaliação. Verifique o console e tente novamente.');
+        btn.disabled    = false;
+        btn.textContent = 'Publicar Avaliação ✨';
+      }
+    }
+
+
+    // ─── Carousel ──────────────────────────────────────────────────────
+    let current = 0;
+    const slides   = document.querySelectorAll('.carousel-slide');
+    const track    = document.getElementById('carouselTrack');
+    const dotsWrap = document.getElementById('carouselDots');
+    let autoplay;
+
+    slides.forEach((_, i) => {
+      const d = document.createElement('div');
+      d.className = 'dot' + (i === 0 ? ' active' : '');
+      d.onclick = () => goTo(i);
+      dotsWrap.appendChild(d);
+    });
+
+    function goTo(n) {
+      current = (n + slides.length) % slides.length;
+      track.style.transform = `translateX(-${current * 100}%)`;
+      document.querySelectorAll('.dot').forEach((d, i) => d.classList.toggle('active', i === current));
+    }
+    function moveCarousel(dir) { goTo(current + dir); resetAutoplay(); }
+    function resetAutoplay() {
+      clearInterval(autoplay);
+      autoplay = setInterval(() => goTo(current + 1), 4500);
+    }
+    resetAutoplay();
+
+    // ─── Reveal scroll ─────────────────────────────────────────────────
+    const obs = new IntersectionObserver(entries => {
+      entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+    }, { threshold: 0.1 });
+    document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+
+    // ─── Star rating ───────────────────────────────────────────────────
+    let selectedStars = 0;
+    const stars = document.querySelectorAll('#starInput span');
+    stars.forEach(s => {
+      s.addEventListener('mouseenter', () => hl(+s.dataset.v));
+      s.addEventListener('mouseleave', () => hl(selectedStars));
+      s.addEventListener('click', () => { selectedStars = +s.dataset.v; hl(selectedStars); });
+    });
+    function hl(n) { stars.forEach((s, i) => s.classList.toggle('active', i < n)); }
+
+    // ─── Avatar upload ─────────────────────────────────────────────────
+    let avatarDataUrl = null;
+
+    function previewAvatar(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        avatarDataUrl = e.target.result;
+        const preview = document.getElementById('avAvatarPreview');
+        preview.innerHTML = `<img src="${avatarDataUrl}" alt="Sua foto"/>`;
+        preview.classList.add('has-img');
+        document.getElementById('avRemoverBtn').style.display = 'inline';
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function removerAvatar() {
+      avatarDataUrl = null;
+      const preview = document.getElementById('avAvatarPreview');
+      preview.innerHTML = '📷';
+      preview.classList.remove('has-img');
+      document.getElementById('avFotoInput').value = '';
+      document.getElementById('avRemoverBtn').style.display = 'none';
+    }
+  </script>
+</body>
+</html>
