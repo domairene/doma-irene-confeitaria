@@ -4,13 +4,11 @@
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <link rel="shortcut icon" href="midia/favicon.ico" type="image/x-icon">
-  <title>Doma Irene — Confeitaria Artesanal</title>
+  <title>Doma Irine — Confeitaria Artesanal</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
-  <!-- ═══════════════════════════════════════════════════════════
-       🔥 FIREBASE SDK — Adicionado para integração com Firestore
-       ═══════════════════════════════════════════════════════════ -->
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
 
@@ -121,7 +119,8 @@
 
     /* EMPRESA */
     #empresa { background: var(--surface); }
-    .empresa-grid { display: grid; grid-template-columns: 1.1fr 1fr; gap: 4rem; align-items: center; margin-top: 3rem; }
+    .empresa-grid { display: grid; grid-template-columns: 1fr; gap: 2rem; align-items: center; margin-top: 3rem; }
+    #empresa .section-desc { max-width: 100%; }
     .empresa-img { border-radius: var(--radius); width: 100%; aspect-ratio: 4/3; object-fit: cover; border: 1px solid var(--border); }
     .empresa-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 1.2rem; margin-top: 2.5rem; }
     .stat-card { background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.5rem; text-align: center; transition: border-color 0.3s; }
@@ -131,7 +130,7 @@
 
     /* EQUIPE */
     #equipe { background: var(--bg); }
-    .equipe-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(195px, 1fr)); gap: 1.5rem; margin-top: 3rem; }
+    .equipe-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 1.5rem; margin-top: 3rem; }
     .team-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; transition: transform 0.35s, border-color 0.3s; }
     .team-card:hover { transform: translateY(-8px); border-color: rgba(232,147,74,0.4); }
     .team-card img { width: 100%; aspect-ratio: 1/1; object-fit: cover; display: block; }
@@ -242,6 +241,7 @@
       .form-row { grid-template-columns: 1fr; }
       .nav-links { display: none; }
       .equipe-grid { grid-template-columns: repeat(2, 1fr); }
+      .equipe-grid .team-card:last-child { grid-column: 1 / -1; max-width: 220px; margin: 0 auto; }
     }
   </style>
 </head>
@@ -294,9 +294,16 @@
           <div class="carousel-caption"><h3>Chocolate Especial</h3><p>Sabores variados, decoração única para cada ocasião</p></div>
         </div>
         <div class="carousel-slide">
-          <img src="https://imagem.band.com.br/88/f_116288.jpg" alt="Bolo decorado"/>
+          <img src="https://imagem.band.com.br/88/f_116288.jpg" alt="churros decorado"/>
           <div class="carousel-caption"><h3>Doce de Leite</h3><p>Arte e sabor reunidos em cada fatia</p></div>
         </div>
+        <div class="carousel-slide">
+          <img src="midia/dodileite.jpg" alt="churros decorado" width="300" height="200"/>
+          <div class="carousel-caption"><h3>churros</h3><p>Arte e sabor reunidos em cada fatia</p></div>
+      </div>
+      <div class="carousel-slide">
+          <img src="midia/img1.jpeg" alt= "churros decorado" width="50" height="50"/>
+          <div class="carousel-caption"><h3>churros</h3><p>Arte e sabor reunidos em cada fatia</p></div>
       </div>
       <button class="carousel-btn carousel-prev" onclick="moveCarousel(-1)">&#8592;</button>
       <button class="carousel-btn carousel-next" onclick="moveCarousel(1)">&#8594;</button>
@@ -357,7 +364,6 @@
           <div class="stat-card"><div class="stat-number">100%</div><div class="stat-label">Artesanal</div></div>
         </div>
       </div>
-      <div class="reveal"></div>
     </div>
   </section>
 
@@ -501,18 +507,64 @@
   <!-- CONTATO -->
   <section id="contato">
     <div class="section-eyebrow reveal"><span>Fale Conosco</span></div>
-    <h2 class="section-title reveal">Faça seu Pedido</h2>
-    <br>
-    <a href="https://wa.me/18996137091?text=Ol%C3%A1%2C%20vim%20pelo%20site%20e%20gostaria%20de%20fazer%20um%20pedido%20da%20DomaIrine!" target="_blank" class="whats-btn">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
-      Pedir pelo WhatsApp
-    </a>
-    <br>
-    <div class="contato-info reveal">
-      <div class="ci-item"><div class="ci-icon">📱</div><div class="ci-text"><h4>WhatsApp</h4><p>(18) 99613-7091</p></div></div>
-      <div class="ci-item"><div class="ci-icon">⏰</div><div class="ci-text"><h4>Atendimento</h4><p>Seg 19h às 22h</p></div></div>
-      <div class="ci-item"><div class="ci-icon">🚚</div><div class="ci-text"><h4>Entrega</h4><p>Apenas retirada.</p></div></div>
-      <div class="ci-item"><div class="ci-icon">📸</div><div class="ci-text"><h4>Instagram</h4><p>@doma.irine</p></div></div>
+    <h2 class="section-title reveal">Entre em Contato</h2>
+    <p class="section-desc reveal" style="margin-top:.5rem">Tem alguma dúvida, sugestão ou quer fazer um pedido especial? Manda uma mensagem pra gente!</p>
+
+    <div class="contato-grid reveal">
+
+      <!-- FORMULÁRIO -->
+      <div class="nova-av-form" style="margin-top:0">
+        <h3>📩 Envie sua mensagem</h3>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Seu nome</label>
+            <input type="text" id="ctNome" placeholder="Ex: Maria Silva"/>
+          </div>
+          <div class="form-group">
+            <label>E-mail</label>
+            <input type="email" id="ctEmail" placeholder="seu@email.com"/>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Assunto</label>
+          <select id="ctAssunto">
+            <option value="">Selecione um assunto...</option>
+            <option value="pedido">🍫 Fazer um pedido</option>
+            <option value="duvida">❓ Dúvida sobre produtos</option>
+            <option value="evento">🎉 Encomenda para evento</option>
+            <option value="parceria">🤝 Parceria / Colaboração</option>
+            <option value="outro">💬 Outro assunto</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>Mensagem</label>
+          <textarea id="ctMensagem" rows="5" placeholder="Escreva sua mensagem aqui..."></textarea>
+        </div>
+
+        <div style="display:flex; gap:1rem; flex-wrap:wrap; align-items:center; margin-top:0.5rem">
+          <button class="btn-submit" id="btnContato" onclick="enviarContato()">Enviar Mensagem ✉️</button>
+          <a href="https://wa.me/18996137091?text=Ol%C3%A1%2C%20vim%20pelo%20site%20e%20gostaria%20de%20falar%20com%20a%20equipe%20DomaIrine!" target="_blank" class="whats-btn" style="padding:0.7rem 1.4rem; font-size:0.85rem">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+            WhatsApp
+          </a>
+        </div>
+
+        <p id="ctFeedback" style="margin-top:1rem; font-size:0.85rem; color:var(--accent); display:none"></p>
+      </div>
+
+      <!-- INFORMAÇÕES -->
+      <div class="contato-info">
+        <div class="ci-item"><div class="ci-icon">📱</div><div class="ci-text"><h4>WhatsApp</h4><p>(18) 99613-7091</p></div></div>
+        <div class="ci-item"><div class="ci-icon">⏰</div><div class="ci-text"><h4>Atendimento</h4><p>Seg 19h às 22h</p></div></div>
+        <div class="ci-item"><div class="ci-icon">🚚</div><div class="ci-text"><h4>Entrega</h4><p>Apenas retirada.</p></div></div>
+        <div class="ci-item"><div class="ci-icon">📸</div><div class="ci-text"><h4>Instagram</h4>
+          <a href="https://www.instagram.com/doma.irine/" target="_blank"><i class="fab fa-instagram"></i> @doma.irine</a>
+        </div></div>
+      </div>
+
     </div>
   </section>
 
@@ -662,6 +714,67 @@
       }
     }
 
+
+    // ═══════════════════════════════════════════════════════════════════
+    // 📩 ENVIAR mensagem de contato para o Firestore
+    // ═══════════════════════════════════════════════════════════════════
+    const contatosRef = db.collection("contatos");
+
+    async function enviarContato() {
+      const nome     = document.getElementById('ctNome').value.trim();
+      const email    = document.getElementById('ctEmail').value.trim();
+      const assunto  = document.getElementById('ctAssunto').value;
+      const mensagem = document.getElementById('ctMensagem').value.trim();
+      const feedback = document.getElementById('ctFeedback');
+
+      if (!nome || !email || !assunto || !mensagem) {
+        feedback.style.color = 'var(--rose)';
+        feedback.textContent = '⚠️ Por favor, preencha todos os campos antes de enviar.';
+        feedback.style.display = 'block';
+        return;
+      }
+
+      const emailValido = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+      if (!emailValido) {
+        feedback.style.color = 'var(--rose)';
+        feedback.textContent = '⚠️ Por favor, insira um e-mail válido.';
+        feedback.style.display = 'block';
+        return;
+      }
+
+      const btn = document.getElementById('btnContato');
+      btn.disabled    = true;
+      btn.textContent = 'Enviando…';
+
+      try {
+        await contatosRef.add({
+          nome,
+          email,
+          assunto,
+          mensagem,
+          criadoEm: firebase.firestore.FieldValue.serverTimestamp()
+        });
+
+        document.getElementById('ctNome').value     = '';
+        document.getElementById('ctEmail').value    = '';
+        document.getElementById('ctAssunto').value  = '';
+        document.getElementById('ctMensagem').value = '';
+
+        feedback.style.color = 'var(--accent)';
+        feedback.textContent = '✅ Mensagem enviada com sucesso! Retornaremos em breve.';
+        feedback.style.display = 'block';
+
+        setTimeout(() => { feedback.style.display = 'none'; }, 5000);
+      } catch (err) {
+        console.error('Erro ao enviar contato:', err);
+        feedback.style.color = 'var(--rose)';
+        feedback.textContent = '❌ Erro ao enviar. Tente novamente ou fale pelo WhatsApp.';
+        feedback.style.display = 'block';
+      } finally {
+        btn.disabled    = false;
+        btn.textContent = 'Enviar Mensagem ✉️';
+      }
+    }
 
     // ─── Carousel ──────────────────────────────────────────────────────
     let current = 0;
