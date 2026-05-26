@@ -285,18 +285,21 @@
   <!-- CARROSSEL -->
   <section id="carrossel">
     <div class="section-eyebrow reveal"><span>Galeria</span></div>
-    <h2 class="section-title reveal">Nossos Sabores em Destaque</h2>
+    <h2 class="section-title reveal">Nosso Sabor em Destaque</h2>
     <p class="section-desc reveal" style="margin-top:.5rem">Cada peça é uma obra de arte feita à mão com carinho e dedicação.</p>
     <div class="carousel-wrap reveal">
       <div class="carousel-track" id="carouselTrack">
         <div class="carousel-slide">
-          <img src="https://assets.bonappetit.com/photos/58ff5f162278cd3dbd2c069c/1:1/w_2560%2Cc_limit/churros.jpg"/>
-          <div class="carousel-caption"><h3>Chocolate Especial</h3><p>Sabores variados, decoração única para cada ocasião</p></div>
-        </div>
-        <div class="carousel-slide">
           <img src="https://imagem.band.com.br/88/f_116288.jpg" alt="Bolo decorado"/>
           <div class="carousel-caption"><h3>Doce de Leite</h3><p>Arte e sabor reunidos em cada fatia</p></div>
         </div>
+        <div class="carousel-slide">
+          <img src="midia/dodileite.jpg" alt="churros decorado" width="300" height="200"/>
+          <div class="carousel-caption"><h3>churros</h3><p>Arte e sabor reunidos em cada fatia</p></div>
+      </div>
+      <div class="carousel-slide">
+          <img src="midia/img1.jpeg" alt= "churros decorado" width="50" height="50"/>
+          <div class="carousel-caption"><h3>churros</h3><p>Arte e sabor reunidos em cada fatia</p></div>
       </div>
       <button class="carousel-btn carousel-prev" onclick="moveCarousel(-1)">&#8592;</button>
       <button class="carousel-btn carousel-next" onclick="moveCarousel(1)">&#8594;</button>
@@ -328,7 +331,7 @@
           </div>
           <div class="feature-item">
             <div class="feature-icon">🍫</div>
-            <div class="feature-text"><h4>Variedade de Sabores</h4><p>Chocolate ou Doce de leite, você está na controle de qual sabor se deliciar.</p></div>
+            <div class="feature-text"><h4>Explosão de Sabores</h4><p>Camada fina de açúcar, Doce de leite, você vai se deliciar.</p></div>
           </div>
         </div>
         <div class="preco-tag">
@@ -353,7 +356,7 @@
         proporcionando uma experiência doce e especial.</p>
         <p class="section-desc" style="margin-top:1rem">Nossa receita é desenvolvida com carinho, respeito ao ingrediente e amor pela confeitaria. Nossa missão é levar um pedacinho de doçura para os momentos mais especiais da sua vida.</p>
         <div class="empresa-stats">
-          <div class="stat-card"><div class="stat-number">2</div><div class="stat-label">Sabores Únicos</div></div>
+          <div class="stat-card"><div class="stat-number">1</div><div class="stat-label">Sabor Único</div></div>
           <div class="stat-card"><div class="stat-number">100%</div><div class="stat-label">Artesanal</div></div>
         </div>
       </div>
@@ -444,7 +447,6 @@
           <select id="avProduto">
             <option value="">Selecione...</option>
             <option>Churros de Doce de Leite</option>
-            <option>Churros de Chocolate</option>
           </select>
         </div>
       </div>
@@ -593,9 +595,7 @@
     const avaliacoesRef = db.collection("avaliacoes");
 
 
-    // ═══════════════════════════════════════════════════════════════════
     // 📥 CARREGAR avaliações do Firestore ao abrir o site
-    // ═══════════════════════════════════════════════════════════════════
     function formatarData(timestamp) {
       if (!timestamp) return 'Agora';
       const d = timestamp.toDate ? timestamp.toDate() : new Date(timestamp);
@@ -662,9 +662,7 @@
     document.addEventListener('DOMContentLoaded', carregarAvaliacoes);
 
 
-    // ═══════════════════════════════════════════════════════════════════
     // 📤 ENVIAR avaliação para o Firestore
-    // ═══════════════════════════════════════════════════════════════════
     async function enviarAvaliacao() {
       const nome    = document.getElementById('avNome').value.trim();
       const produto = document.getElementById('avProduto').value;
@@ -718,9 +716,7 @@
     }
 
 
-    // ═══════════════════════════════════════════════════════════════════
     // 📩 ENVIAR mensagem de contato para o Firestore
-    // ═══════════════════════════════════════════════════════════════════
     const contatosRef = db.collection("contatos");
 
     async function enviarContato() {
